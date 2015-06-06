@@ -9,7 +9,8 @@ Array.prototype.contains = function(obj) {
     return false;
 }
 
-
+_curLink = 0;
+_lstLink = [];
 console.log("Begin...");
 var curPage = location.pathname;
 switch(curPage)
@@ -24,7 +25,7 @@ switch(curPage)
 		getInput();
 		break;
 	default:
-		//if(curPage.length > 2) window.close();
+		if(curPage.length > 2) window.close();
 		break;
 }
 
@@ -78,10 +79,10 @@ function openNext()
 	}
 	else if(_curLink == _lstLink.length)
 	{
-		alert("下载完成！立即查看>>>");
-		chrome.downloads.showDefaultFolder();
+		console.log("Finish");
 	}
-	openByFrame(_lstLink[_curLink++]);
+	else
+		openByFrame(_lstLink[_curLink++]);
 }
 
 // 试题集页面执行的链接
@@ -109,8 +110,8 @@ function getInput()
 	content = "<meta charset='utf-8'/>" + content;
 	content = "<title>" + title + "</title>" + content;
 	downloadFile("Problem/" + search.gpid + ".html", content);
- 	for(var i = 1; i <= 10; i++)
-		downloadInput(search.gpid, i);
+ 	//for(var i = 1; i <= 30; i++)
+	downloadInput(search.gpid, 1);
 }
 
 function downloadFile(fileName, content){
@@ -146,14 +147,29 @@ function downloadInput(pid, did)
  	$.post("http://lx.lanqiao.org/lanqiao.DownloadData.dt", {type:"inp",gpid:pid,idx:did}, function(obj) {
 		if(undefined == obj["handle"])
 		{
-			opener.openNext();
+			openNext();
 		}
-		$.get("http://lx.lanqiao.org/web.RequireTempFile.do?handle=" + obj["handle"], function(content){
-			downloadFile(filename, content);
-			if(did == 10)
-			{
-				opener.openNext();
-			}
-		});
+		try
+		{
+			$.get("http://lx.lanqiao.org/web.RequireTempFile.do?handle=" + obj["handle"], function(content){
+				downloadFile(filename, content);
+				downloadInput(pid, did + 1);
+				if(did == 10)
+				{
+					openNext();
+				}
+			});
+		}
+		catch(e)
+		{
+			$.get("http://lx.lanqiao.org/web.RequireTempFile.do?handle=" + obj["handle"], function(content){
+				downloadFile(filename, content);
+				downloadInput(pid, did + 1);
+				if(did == 10)
+				{
+					openNext();
+				}
+			});
+		}
 	}, "JSON");
 }
