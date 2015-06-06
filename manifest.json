@@ -1,0 +1,15 @@
+{
+    "manifest_version": 2,
+    "name": "藍橋杯試題抓取",
+    "version": "1.0",
+    "description": "抓取藍橋杯試題集",
+	"permissions":[
+		"downloads"
+	],
+    "content_scripts": [
+        {
+            "matches": ["*://lx.lanqiao.org/*"],
+            "js": ["js/control.js"]
+        }
+    ]
+}
