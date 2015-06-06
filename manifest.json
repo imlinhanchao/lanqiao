@@ -9,7 +9,7 @@
     "content_scripts": [
         {
             "matches": ["*://lx.lanqiao.org/*"],
-            "js": ["js/control.js"]
+            "js": ["js/jquery-min.js","js/control.js"]
         }
     ]
 }
